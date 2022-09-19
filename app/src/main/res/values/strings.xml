@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">E-Shop</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="home">Home Screen</string>
+    <string name="category">Category Screen</string>
+    <string name="cart">Cart Screen</string>
+    <string name="favorite">Favorite Screen</string>
+    <string name="account">Account Screen</string>
+</resources>

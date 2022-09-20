@@ -1,9 +1,11 @@
 <resources>
     <string name="app_name">E-Shop</string>
     <!-- Strings used for fragments for navigation -->
-    <string name="home">Home Screen</string>
-    <string name="category">Category Screen</string>
-    <string name="cart">Cart Screen</string>
-    <string name="favorite">Favorite Screen</string>
-    <string name="account">Account Screen</string>
+    <string name="home">Home</string>
+    <string name="category">Category</string>
+    <string name="cart">Cart</string>
+    <string name="favorite">Favorite</string>
+    <string name="account">Account</string>
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

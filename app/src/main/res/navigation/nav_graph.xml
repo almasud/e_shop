@@ -3,12 +3,37 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/FirstFragment">
+    app:startDestination="@id/navHome">
 
     <fragment
-        android:id="@+id/FirstFragment"
+        android:id="@+id/navHome"
         android:name="com.github.almasud.e_shop.ui.home.HomeFragment"
         android:label="@string/home"
         tools:layout="@layout/fragment_home">
     </fragment>
+    <fragment
+        android:id="@+id/navCategory"
+        android:name="com.github.almasud.e_shop.ui.category.CategoryFragment"
+        android:label="@string/category"
+        tools:layout="@layout/fragment_category">
+    </fragment>
+    <fragment
+        android:id="@+id/navCart"
+        android:name="com.github.almasud.e_shop.ui.cart.CartFragment"
+        android:label="@string/cart"
+        tools:layout="@layout/fragment_cart">
+    </fragment>
+    <fragment
+        android:id="@+id/navFavorite"
+        android:name="com.github.almasud.e_shop.ui.favorite.FavoriteFragment"
+        android:label="@string/favorite"
+        tools:layout="@layout/fragment_favorite">
+    </fragment>
+    <fragment
+        android:id="@+id/navAccount"
+        android:name="com.github.almasud.e_shop.ui.account.AccountFragment"
+        android:label="@string/account"
+        tools:layout="@layout/fragment_account">
+    </fragment>
+
 </navigation>

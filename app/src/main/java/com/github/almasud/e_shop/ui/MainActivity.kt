@@ -6,18 +6,17 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.navigateUp
-import androidx.navigation.ui.onNavDestinationSelected
-import androidx.navigation.ui.setupActionBarWithNavController
+import androidx.navigation.ui.*
 import com.github.almasud.e_shop.R
 import com.github.almasud.e_shop.databinding.ActivityMainBinding
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var navController: NavController
+    private lateinit var bottomNavigation: BottomNavigationView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         WindowCompat.setDecorFitsSystemWindows(window, false)
@@ -29,8 +28,15 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(binding.toolbar)
 
         navController = findNavController(R.id.nav_host_fragment_content_main)
-        appBarConfiguration = AppBarConfiguration(navController.graph)
+        bottomNavigation = binding.layoutContent.bottomNavigation
+
+        appBarConfiguration = AppBarConfiguration(
+            setOf(
+                R.id.navHome, R.id.navCategory, R.id.navCart, R.id.navFavorite, R.id.navAccount
+            )
+        )
         setupActionBarWithNavController(navController, appBarConfiguration)
+        bottomNavigation.setupWithNavController(navController)
     }
 
     // Handle navigation option item click

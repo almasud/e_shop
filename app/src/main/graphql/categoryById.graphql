@@ -1,0 +1,33 @@
+query CategoryById($uid: String!) {
+    getCategories(
+        filter: { uid: $uid }
+    ) {
+        result {
+            categories {
+                uid
+                bnName
+                enName
+                parent {
+                    uid
+                    bnName
+                    enName
+                }
+                parents {
+                    uid
+                    bnName
+                    enName
+                }
+                image {
+                    name
+                    url
+                    signedUrl
+                }
+                attributeSetUid
+                isActive
+                inActiveNote
+                createdAt
+                updatedAt
+            }
+        }
+    }
+}

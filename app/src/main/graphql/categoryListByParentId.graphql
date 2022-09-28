@@ -1,21 +1,22 @@
-query CategoryList($pagination: Int!, $skip: Int!) {
+query CategoryListByParentId($parentCategoryUid: String!, $pagination: Int!, $skip: Int!) {
     getCategories(
+        filter: { parentCategoryUid: $parentCategoryUid },
         pagination: { limit: $pagination, skip: $skip }
     ) {
         result {
             categories {
                 uid
-                enName
                 bnName
+                enName
                 parent {
                     uid
-                    enName
                     bnName
+                    enName
                 }
                 parents {
                     uid
-                    enName
                     bnName
+                    enName
                 }
                 image {
                     name

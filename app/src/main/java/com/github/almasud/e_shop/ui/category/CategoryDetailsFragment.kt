@@ -10,16 +10,15 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.apollographql.apollo3.exception.ApolloException
 import com.github.almasud.e_shop.CategoryListByParentIdQuery
-import com.github.almasud.e_shop.R
 import com.github.almasud.e_shop.data.api.ApiClient
-import com.github.almasud.e_shop.databinding.FragmentCategoryBinding
+import com.github.almasud.e_shop.databinding.FragmentCategoryDetailsBinding
 import com.github.almasud.e_shop.domain.model.Category
 
 
-class CategoryFragment : Fragment() {
+class CategoryDetailsFragment : Fragment() {
 
-    private var _binding: FragmentCategoryBinding? = null
-    private val categoryListAdapter = CategoryListAdapter()
+    private var _binding: FragmentCategoryDetailsBinding? = null
+    private val categoryListAdapter = CategoryListExpandableAdapter()
     private var categories: MutableList<Category> = mutableListOf()
 
     // This property is only valid between onCreateView and
@@ -31,17 +30,11 @@ class CategoryFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        _binding = FragmentCategoryBinding.inflate(inflater, container, false)
-        binding.rvCart.layoutManager = LinearLayoutManager(
+        _binding = FragmentCategoryDetailsBinding.inflate(inflater, container, false)
+        binding.rvCatExpandable.layoutManager = LinearLayoutManager(
             requireContext(), LinearLayoutManager.VERTICAL, false
         )
-        binding.rvCart.adapter = categoryListAdapter
-
-        categoryListAdapter.setOnCategoryClicked { category, view ->
-            Log.i(TAG, "onCreateView: setOnCategoryClicked: is called")
-            displayDetails(category)
-        }
-
+        binding.rvCatExpandable.adapter = categoryListAdapter
         return binding.root
 
     }
@@ -49,37 +42,33 @@ class CategoryFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+    }
+
+    fun displayExpandableCategory(category: Category) {
+        Log.i(TAG, "displayExpandableCategory: is called for category uid: ${category.uid}")
+
         lifecycleScope.launchWhenResumed {
             val response = try {
                 ApiClient.apolloClient.query(
-                    CategoryListByParentIdQuery(
-                        parentCategoryUid = "root",
-                        pagination = 100,
-                        skip = 0
-                    )
+                    CategoryListByParentIdQuery(parentCategoryUid = category.uid!!, pagination = 100, skip = 0)
                 ).execute()
             } catch (e: ApolloException) {
-                Log.e(TAG, "onViewCreated: exception: " + e.message)
+                Log.e(TAG, "displayExpandableCategory: exception: " + e.message)
                 return@launchWhenResumed
             }
 
             val fetchCategories = response.data?.getCategories
-            Log.i(TAG, "onViewCreated: fetchCategories: $fetchCategories")
+            Log.i(TAG, "displayExpandableCategory: fetchCategories: $fetchCategories")
             fetchCategories?.result?.categories?.forEach { category ->
                 categories.add(Category.toCategory(category))
             }
 
             categoryListAdapter.submitList(categories)
+
+            categoryListAdapter.setOnCategoryClicked { category, view ->
+
+            }
         }
-    }
-
-    private fun displayDetails(category: Category) {
-        Log.i(TAG, "displayDetails: is called")
-
-        val fragmentDualPaneDetails = childFragmentManager.findFragmentById(
-            R.id.layoutCatDetails
-        ) as CategoryDetailsFragment
-        fragmentDualPaneDetails.displayExpandableCategory(category)
     }
 
     override fun onDestroyView() {
@@ -88,6 +77,6 @@ class CategoryFragment : Fragment() {
     }
 
     companion object {
-        private const val TAG = "CategoryFragment"
+        private const val TAG = "CategoryDetailsFragment"
     }
 }

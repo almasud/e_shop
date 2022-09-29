@@ -19,7 +19,7 @@
 
     <fragment
         android:id="@+id/layoutCatDetails"
-        android:name="com.github.almasud.e_shop.ui.category.CategoryDetailsFragment"
+        android:name="com.github.almasud.e_shop.ui.category.details.CategoryDetailsFragment"
         android:layout_width="0dp"
         android:layout_height="0dp"
         tools:layout="@layout/fragment_category_details"

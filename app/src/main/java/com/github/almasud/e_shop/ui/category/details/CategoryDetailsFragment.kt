@@ -1,4 +1,4 @@
-package com.github.almasud.e_shop.ui.category
+package com.github.almasud.e_shop.ui.category.details
 
 import android.annotation.SuppressLint
 import android.os.Bundle
@@ -21,6 +21,7 @@ class CategoryDetailsFragment : Fragment() {
     private var _binding: FragmentCategoryDetailsBinding? = null
     private val categoryListAdapter = CategoryListExpandableAdapter()
     private var categories: MutableList<Category> = mutableListOf()
+    private var subCategories: MutableList<Category> = mutableListOf()
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -36,8 +37,8 @@ class CategoryDetailsFragment : Fragment() {
             requireContext(), LinearLayoutManager.VERTICAL, false
         )
         binding.rvCatExpandable.adapter = categoryListAdapter
-        return binding.root
 
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -69,8 +70,29 @@ class CategoryDetailsFragment : Fragment() {
             categoryListAdapter.submitList(categories)
             categoryListAdapter.notifyDataSetChanged()
 
-            categoryListAdapter.setOnCategoryClicked { category, view ->
+            categoryListAdapter.setOnExpandableCatExpandListener { selectCategory, _, subCatAdapter ->
+                Log.i(TAG, "setOnExpandableCatClicked: category: $selectCategory")
 
+                subCategories.clear()
+                lifecycleScope.launchWhenResumed {
+                    val subCategoryResponse = try {
+                        ApiClient.apolloClient.query(
+                            CategoryListByParentIdQuery(parentCategoryUid = selectCategory.uid!!, pagination = 100, skip = 0)
+                        ).execute()
+                    } catch (e: ApolloException) {
+                        Log.e(TAG, "displayExpandableCategory: exception: " + e.message)
+                        return@launchWhenResumed
+                    }
+
+                    val fetchedSubCategories = subCategoryResponse.data?.getCategories
+                    Log.i(TAG, "displayExpandableCategory: fetchedSubCategories: $fetchedSubCategories")
+                    fetchedSubCategories?.result?.categories?.forEach { category ->
+                        subCategories.add(Category.toCategory(category))
+                    }
+                    // Finally submit the subCategories
+                    subCatAdapter.submitList(subCategories)
+                    subCatAdapter.notifyDataSetChanged()
+                }
             }
         }
     }

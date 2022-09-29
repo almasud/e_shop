@@ -15,6 +15,7 @@ import com.github.almasud.e_shop.R
 import com.github.almasud.e_shop.data.api.ApiClient
 import com.github.almasud.e_shop.databinding.FragmentCategoryBinding
 import com.github.almasud.e_shop.domain.model.Category
+import com.github.almasud.e_shop.ui.category.details.CategoryDetailsFragment
 
 
 class CategoryFragment : Fragment() {
@@ -38,7 +39,7 @@ class CategoryFragment : Fragment() {
         )
         binding.rvCat.adapter = categoryListAdapter
 
-        categoryListAdapter.setOnCategoryClicked { category, view ->
+        categoryListAdapter.setOnCategoryClickListener { category, view ->
             Log.i(TAG, "onCreateView: setOnCategoryClicked: is called")
             displayDetails(category)
         }

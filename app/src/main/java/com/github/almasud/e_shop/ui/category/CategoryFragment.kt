@@ -1,5 +1,6 @@
 package com.github.almasud.e_shop.ui.category
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -32,10 +33,10 @@ class CategoryFragment : Fragment() {
     ): View? {
 
         _binding = FragmentCategoryBinding.inflate(inflater, container, false)
-        binding.rvCart.layoutManager = LinearLayoutManager(
+        binding.rvCat.layoutManager = LinearLayoutManager(
             requireContext(), LinearLayoutManager.VERTICAL, false
         )
-        binding.rvCart.adapter = categoryListAdapter
+        binding.rvCat.adapter = categoryListAdapter
 
         categoryListAdapter.setOnCategoryClicked { category, view ->
             Log.i(TAG, "onCreateView: setOnCategoryClicked: is called")
@@ -49,6 +50,13 @@ class CategoryFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    override fun onStart() {
+        super.onStart()
+
+        categories.clear()
         lifecycleScope.launchWhenResumed {
             val response = try {
                 ApiClient.apolloClient.query(
@@ -59,17 +67,18 @@ class CategoryFragment : Fragment() {
                     )
                 ).execute()
             } catch (e: ApolloException) {
-                Log.e(TAG, "onViewCreated: exception: " + e.message)
+                Log.e(TAG, "onStart: exception: " + e.message)
                 return@launchWhenResumed
             }
 
             val fetchCategories = response.data?.getCategories
-            Log.i(TAG, "onViewCreated: fetchCategories: $fetchCategories")
+            Log.i(TAG, "onStart: fetchCategories: $fetchCategories")
             fetchCategories?.result?.categories?.forEach { category ->
                 categories.add(Category.toCategory(category))
             }
-
+            // Finally submit the categories
             categoryListAdapter.submitList(categories)
+            categoryListAdapter.notifyDataSetChanged()
         }
     }
 

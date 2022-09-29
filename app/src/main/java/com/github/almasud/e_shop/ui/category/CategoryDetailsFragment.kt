@@ -1,5 +1,6 @@
 package com.github.almasud.e_shop.ui.category
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -44,9 +45,11 @@ class CategoryDetailsFragment : Fragment() {
 
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     fun displayExpandableCategory(category: Category) {
-        Log.i(TAG, "displayExpandableCategory: is called for category uid: ${category.uid}")
+        Log.i(TAG, "displayExpandableCategory: is called for category: $category")
 
+        categories.clear()
         lifecycleScope.launchWhenResumed {
             val response = try {
                 ApiClient.apolloClient.query(
@@ -62,8 +65,9 @@ class CategoryDetailsFragment : Fragment() {
             fetchCategories?.result?.categories?.forEach { category ->
                 categories.add(Category.toCategory(category))
             }
-
+            // Finally submit the categories
             categoryListAdapter.submitList(categories)
+            categoryListAdapter.notifyDataSetChanged()
 
             categoryListAdapter.setOnCategoryClicked { category, view ->
 

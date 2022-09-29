@@ -8,23 +8,25 @@
     android:background="@color/page">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_cart"
-        android:layout_width="100dp"
+        android:id="@+id/rv_cat"
+        android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginVertical="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:listitem="@layout/item_category" />
+        tools:listitem="@layout/item_category"
+        app:layout_constraintWidth_percent=".25" />
 
     <fragment
         android:id="@+id/layoutCatDetails"
         android:name="com.github.almasud.e_shop.ui.category.CategoryDetailsFragment"
         android:layout_width="0dp"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         tools:layout="@layout/fragment_category_details"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@id/rv_cart"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintStart_toEndOf="@id/rv_cat"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_percent=".75" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

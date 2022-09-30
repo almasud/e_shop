@@ -1,5 +1,6 @@
 package com.github.almasud.e_shop.ui.category.details
 
+import android.annotation.SuppressLint
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -13,7 +14,6 @@ import com.github.almasud.e_shop.R
 import com.github.almasud.e_shop.databinding.ItemCategoryExpandableBinding
 import com.github.almasud.e_shop.domain.model.Category
 import com.github.almasud.e_shop.ui.category.details.sub_category.SubCategoryListAdapter
-
 
 class CategoryListExpandableAdapter :
     ListAdapter<Category, CategoryListExpandableAdapter.CategoryExpandableViewHolder>(object :
@@ -56,6 +56,7 @@ class CategoryListExpandableAdapter :
         private val layoutBinding: ItemCategoryExpandableBinding
     ) : RecyclerView.ViewHolder(layoutBinding.root) {
 
+        @SuppressLint("LongLogTag")
         fun updateUI(category: Category) {
             Log.i(TAG, "updateUI: is called")
             layoutBinding.tvCategory.text = category.enName
@@ -95,7 +96,7 @@ class CategoryListExpandableAdapter :
     }
 
     companion object {
-        private const val TAG = "CategoryListExpandableA"
+        private const val TAG = "CategoryListExpandableAdapter"
     }
 
 }

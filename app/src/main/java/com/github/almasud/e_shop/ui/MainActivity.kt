@@ -10,7 +10,9 @@ import androidx.navigation.ui.*
 import com.github.almasud.e_shop.R
 import com.github.almasud.e_shop.databinding.ActivityMainBinding
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding

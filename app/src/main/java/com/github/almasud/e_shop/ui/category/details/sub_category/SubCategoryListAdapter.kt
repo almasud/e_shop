@@ -11,7 +11,6 @@ import com.github.almasud.e_shop.databinding.ItemSubCategoryBinding
 import com.github.almasud.e_shop.domain.model.Category
 import com.github.almasud.e_shop.ui.util.ImageUtil
 
-
 class SubCategoryListAdapter :
     ListAdapter<Category, SubCategoryListAdapter.CategoryViewHolder>(object :
         DiffUtil.ItemCallback<Category>() {

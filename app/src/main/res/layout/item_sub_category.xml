@@ -2,29 +2,27 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/layout_profile"
+    android:id="@+id/layout_sub_category"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_gravity="center"
-    android:layout_marginEnd="8dp"
-    android:background="@android:color/transparent">
+    android:layout_marginEnd="4dp">
 
     <RelativeLayout
         android:id="@+id/layout_sub_cat_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@+id/tv_sub_cat_name"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
         android:clickable="true"
-        android:focusable="true">
+        android:focusable="true"
+        android:background="@drawable/bg_white_radius_4">
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tv_sub_cat_icon"
-            android:layout_width="96dp"
-            android:layout_height="96dp"
-            android:paddingVertical="16dp"
+            android:layout_width="75dp"
+            android:layout_height="75dp"
             android:textAlignment="center"
             android:textColor="@color/icon"
             android:textSize="48sp"
@@ -32,10 +30,13 @@
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/iv_sub_cat_icon"
-            android:layout_width="96dp"
-            android:layout_height="96dp"
+            android:layout_width="75dp"
+            android:layout_height="75dp"
             android:src="@drawable/ic_avatar"
-            android:visibility="gone" />
+            android:scaleType="fitXY"
+            android:padding="4dp"
+            android:visibility="gone"
+            tools:visibility="gone" />
 
     </RelativeLayout>
 
@@ -45,11 +46,12 @@
         android:layout_height="wrap_content"
         android:textAlignment="center"
         android:textColor="@color/icon"
-        android:textSize="18sp"
+        android:textSize="14sp"
         android:padding="2dp"
-        tools:text="Sub category"
+        tools:text="Category"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/layout_sub_cat_button"/>
+        app:layout_constraintTop_toBottomOf="@+id/layout_sub_cat_button"
+        app:layout_constraintBottom_toBottomOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

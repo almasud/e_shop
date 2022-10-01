@@ -2,11 +2,10 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/layout_profile"
+    android:id="@+id/layout_category"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="4dp"
-    android:background="@color/white">
+    android:background="@drawable/border_category_bottom">
 
     <RelativeLayout
         android:id="@+id/layout_cat_button"
@@ -23,7 +22,7 @@
             android:id="@+id/tv_cat_icon"
             android:layout_width="96dp"
             android:layout_height="96dp"
-            android:paddingVertical="16dp"
+            android:paddingVertical="8dp"
             android:textAlignment="center"
             android:textColor="@color/icon"
             android:textSize="48sp"
@@ -34,7 +33,8 @@
             android:layout_width="96dp"
             android:layout_height="96dp"
             android:src="@drawable/ic_avatar"
-            android:visibility="gone" />
+            android:visibility="gone"
+            tools:visibility="gone" />
 
     </RelativeLayout>
 

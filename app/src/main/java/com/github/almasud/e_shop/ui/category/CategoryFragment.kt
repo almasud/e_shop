@@ -1,6 +1,5 @@
 package com.github.almasud.e_shop.ui.category
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -41,7 +40,7 @@ class CategoryFragment : Fragment() {
         )
         binding.rvCat.adapter = categoryListAdapter
 
-        categoryListAdapter.setOnCategoryClickListener { category, view ->
+        categoryListAdapter.setOnCategoryClickListener { category, _ ->
             Log.i(TAG, "onCreateView: setOnCategoryClicked: is called")
             displayDetails(category)
         }

@@ -45,6 +45,7 @@ class CategoryDetailsFragment : Fragment() {
         return binding.root
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -53,7 +54,10 @@ class CategoryDetailsFragment : Fragment() {
             viewModel.expandableCategoriesByParentId.collect { networkResult ->
                 when (networkResult) {
                     is NetworkResult.Loading -> {
-                        Log.i(TAG, "onViewCreated: expandableCategoriesByParentId data is loading...")
+                        Log.i(
+                            TAG,
+                            "onViewCreated: expandableCategoriesByParentId data is loading..."
+                        )
                     }
                     is NetworkResult.Success -> {
                         val fetchCategories = networkResult.data.getCategories?.result?.categories
@@ -71,7 +75,10 @@ class CategoryDetailsFragment : Fragment() {
                         categoryListAdapter.notifyDataSetChanged()
 
                         categoryListAdapter.setOnExpandableCatExpandListener { selectCategory, _, subCatAdapter ->
-                            Log.i(TAG, "setOnExpandableCatClicked: category: $selectCategory")
+                            Log.i(
+                                TAG,
+                                "setOnExpandableCatClicked: category: ${selectCategory.enName} and uid: ${selectCategory.uid}"
+                            )
                             this@CategoryDetailsFragment.subCatAdapter = subCatAdapter
 
                             // Load the sub categories
@@ -103,7 +110,8 @@ class CategoryDetailsFragment : Fragment() {
                         Log.i(TAG, "onViewCreated: subCategoriesByParentId data is loading...")
                     }
                     is NetworkResult.Success -> {
-                        val fetchedSubCategories = networkResult.data.getCategories?.result?.categories
+                        val fetchedSubCategories =
+                            networkResult.data.getCategories?.result?.categories
                         Log.i(
                             TAG,
                             "onViewCreated: subCategoriesByParentId: fetchedSubCategories: $fetchedSubCategories"
@@ -114,8 +122,11 @@ class CategoryDetailsFragment : Fragment() {
                             subCategories.add(Category.toCategory(category))
                         }
                         // Finally submit the subCategories
-                        subCatAdapter.submitList(subCategories)
-                        subCatAdapter.notifyDataSetChanged()
+                        if (this@CategoryDetailsFragment::subCatAdapter.isInitialized) {
+                            subCatAdapter.submitList(subCategories)
+                            subCatAdapter.notifyDataSetChanged()
+                        }
+
                     }
                     is NetworkResult.Error -> {
                         Log.e(
@@ -137,7 +148,10 @@ class CategoryDetailsFragment : Fragment() {
 
     @SuppressLint("NotifyDataSetChanged")
     fun displayExpandableCategory(category: Category) {
-        Log.i(TAG, "displayExpandableCategory: is called for category: $category")
+        Log.i(
+            TAG,
+            "displayExpandableCategory: is called for category: ${category.enName} and uid: ${category.uid}"
+        )
 
         // Load the expandable categories
         viewModel.loadExpandableCategoriesByParentId(category.uid!!)

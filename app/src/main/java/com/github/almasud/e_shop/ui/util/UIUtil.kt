@@ -4,6 +4,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.github.almasud.e_shop.R
+import java.util.*
 
 object UIUtil {
 
@@ -48,7 +49,11 @@ object UIUtil {
     }
 
     fun getFirstOne(str: String): String {
-        return if (str.length < 2) str else str.substring(0, 1)
+        return (if (str.length < 2) str else str.substring(0, 1)).replaceFirstChar {
+            if (it.isLowerCase()) it.titlecase(
+                Locale.ROOT
+            ) else it.toString()
+        }
     }
 
 }

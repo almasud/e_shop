@@ -14,7 +14,7 @@
     <fragment
         android:id="@+id/navCategory"
         android:name="com.github.almasud.e_shop.ui.category.CategoryFragment"
-        android:label="@string/category"
+        android:label="@string/browse_category"
         tools:layout="@layout/fragment_category">
     </fragment>
     <fragment

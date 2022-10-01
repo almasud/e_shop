@@ -59,7 +59,7 @@ object ImageUtil {
     ) {
         if (name != null) {
             textView.text = UIUtil.getFirstOne(name)
-        } else textView.text = UIUtil.getFirstOne("U")
+        } else textView.text = "U"
         textView.visibility = View.VISIBLE
         imageView.visibility = View.INVISIBLE
         Glide.with(context)
@@ -75,11 +75,6 @@ object ImageUtil {
                 ): Boolean {
                     Log.e(TAG, "onLoadFailed: exception: " + e!!.message, e)
                     onImageLoadStatus?.let { it(false) }
-                    if (name != null) {
-                        textView.text = "" + UIUtil.getFirstOne(name)
-                    } else textView.text = "" + UIUtil.getFirstOne("N")
-                    textView.visibility = View.VISIBLE
-                    imageView.visibility = View.INVISIBLE
                     return false
                 }
 

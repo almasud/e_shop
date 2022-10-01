@@ -3,6 +3,7 @@
     <!-- Strings used for fragments for navigation -->
     <string name="home">Home</string>
     <string name="category">Category</string>
+    <string name="browse_category">Browse Category</string>
     <string name="cart">Cart</string>
     <string name="favorite">Favorite</string>
     <string name="account">Account</string>

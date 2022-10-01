@@ -22,7 +22,7 @@
             android:id="@+id/tv_cat_icon"
             android:layout_width="96dp"
             android:layout_height="96dp"
-            android:paddingVertical="8dp"
+            android:paddingVertical="16dp"
             android:textAlignment="center"
             android:textColor="@color/icon"
             android:textSize="48sp"

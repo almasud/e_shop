@@ -4,16 +4,16 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.github.almasud.e_shop.databinding.ItemSubCategoryBinding
-import com.github.almasud.e_shop.domain.model.Category
+import com.github.almasud.e_shop.domain.model.entity.Category
 import com.github.almasud.e_shop.ui.util.ImageUtil
 import java.util.*
 
 class SubCategoryListAdapter :
-    ListAdapter<Category, SubCategoryListAdapter.CategoryViewHolder>(object :
+    PagingDataAdapter<Category, SubCategoryListAdapter.CategoryViewHolder>(object :
         DiffUtil.ItemCallback<Category>() {
         override fun areItemsTheSame(oldItem: Category, newItem: Category): Boolean {
             return oldItem == newItem
@@ -39,7 +39,7 @@ class SubCategoryListAdapter :
     override fun onBindViewHolder(holder: CategoryViewHolder, position: Int) {
         val category = getItem(position)
 
-        holder.updateUI(category)
+        category?.let { holder.updateUI(it) }
     }
 
     inner class CategoryViewHolder(

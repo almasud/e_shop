@@ -33,6 +33,9 @@
             android:layout_width="96dp"
             android:layout_height="96dp"
             android:src="@drawable/ic_avatar"
+            android:scaleType="fitXY"
+            android:paddingHorizontal="8dp"
+            android:paddingTop="8dp"
             android:visibility="gone"
             tools:visibility="gone" />
 

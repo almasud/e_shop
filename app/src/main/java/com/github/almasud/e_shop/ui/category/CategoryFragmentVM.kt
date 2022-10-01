@@ -4,10 +4,12 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.github.almasud.e_shop.CategoryListByParentIdQuery
-import com.github.almasud.e_shop.data.api.NetworkResult
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
+import com.github.almasud.e_shop.domain.model.entity.Category
 import com.github.almasud.e_shop.domain.repo.CategoryRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -17,16 +19,18 @@ class CategoryFragmentVM @Inject constructor(
     private val categoryRepo: CategoryRepo,
     application: Application
 ) : AndroidViewModel(application) {
-    private val _categoriesByParentId =
-        MutableStateFlow<NetworkResult<CategoryListByParentIdQuery.Data>>(NetworkResult.Loading())
-    val categoriesByParentId: Flow<NetworkResult<CategoryListByParentIdQuery.Data>> =
-        _categoriesByParentId
+    private val parentIdMutableStateFlow = MutableStateFlow("Initial Value")
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val categoriesByParentId: Flow<PagingData<Category>> =
+        parentIdMutableStateFlow.flatMapLatest { parentId ->
+            Log.i(TAG, "categoriesByParentId: parentId: $parentId")
+            categoryRepo.getCategoriesByParentId(parentId)
+        }.cachedIn(viewModelScope)
 
     fun loadCategoryByParentId(parentId: String) = viewModelScope.launch {
         Log.i(TAG, "loadCategoryByParentId: parentId: $parentId")
-        _categoriesByParentId.update {
-            categoryRepo.getCategoriesByParentIdFromApi(parentId)
-        }
+        parentIdMutableStateFlow.update { parentId }
     }
 
     companion object {

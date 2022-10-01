@@ -1,28 +1,32 @@
 package com.github.almasud.e_shop.ui.category
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.paging.LoadState
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.almasud.e_shop.R
-import com.github.almasud.e_shop.data.api.NetworkResult
 import com.github.almasud.e_shop.databinding.FragmentCategoryBinding
-import com.github.almasud.e_shop.domain.model.Category
+import com.github.almasud.e_shop.domain.model.entity.Category
 import com.github.almasud.e_shop.ui.category.details.CategoryDetailsFragment
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class CategoryFragment : Fragment() {
 
     private var _binding: FragmentCategoryBinding? = null
-    private val categoryListAdapter = CategoryListAdapter()
-    private var categories: MutableList<Category> = mutableListOf()
+    private val categoryListPagingAdapter = CategoryListPagingAdapter()
+
+    //    private var categories: MutableList<Category> = mutableListOf()
     private val viewModel: CategoryFragmentVM by viewModels()
 
     // This property is only valid between onCreateView and
@@ -38,9 +42,9 @@ class CategoryFragment : Fragment() {
         binding.rvCat.layoutManager = LinearLayoutManager(
             requireContext(), LinearLayoutManager.VERTICAL, false
         )
-        binding.rvCat.adapter = categoryListAdapter
+        binding.rvCat.adapter = categoryListPagingAdapter
 
-        categoryListAdapter.setOnCategoryClickListener { category, _ ->
+        categoryListPagingAdapter.setOnCategoryClickListener { category, _ ->
             Log.i(TAG, "onCreateView: setOnCategoryClicked: is called")
             displayDetails(category)
         }
@@ -49,43 +53,30 @@ class CategoryFragment : Fragment() {
 
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         lifecycleScope.launch {
-            viewModel.categoriesByParentId.collect { networkResult ->
-                when (networkResult) {
-                    is NetworkResult.Loading -> {
-                        Log.i(TAG, "onViewCreated: categoriesByParentId data is loading...")
-                    }
-                    is NetworkResult.Success -> {
-                        val fetchCategories = networkResult.data.getCategories?.result?.categories
-                        Log.i(
-                            TAG,
-                            "onViewCreated: categoriesByParentId: fetchCategories: $fetchCategories"
-                        )
+            viewModel.categoriesByParentId.collectLatest { categoryPagingData ->
+                categoryListPagingAdapter.submitData(categoryPagingData)
+                categoryListPagingAdapter.notifyDataSetChanged()
+            }
+        }
 
-                        categories.clear()
-                        fetchCategories?.forEach { category ->
-                            categories.add(Category.toCategory(category))
-                        }
-                        // Finally submit the categories
-                        categoryListAdapter.submitList(categories)
-                        categoryListAdapter.notifyDataSetChanged()
-                    }
-                    is NetworkResult.Error -> {
-                        Log.e(
-                            TAG,
-                            "onViewCreated categoriesByParentId: error: ${networkResult.message}"
-                        )
-                    }
-                    is NetworkResult.Exception -> {
-                        Log.e(
-                            TAG,
-                            "onViewCreated: categoriesByParentId: error: ${networkResult.e.message}",
-                            networkResult.e
-                        )
-                    }
+        lifecycleScope.launch {
+            categoryListPagingAdapter.loadStateFlow.collect { loadState ->
+                // Toast on any error, regardless of whether it came from RemoteMediator or PagingSource
+                val errorState = loadState.source.append as? LoadState.Error
+                    ?: loadState.source.prepend as? LoadState.Error
+                    ?: loadState.append as? LoadState.Error
+                    ?: loadState.prepend as? LoadState.Error
+                errorState?.let {
+                    Toast.makeText(
+                        requireContext(),
+                        "\uD83D\uDE28 Wooops ${it.error}",
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
             }
         }

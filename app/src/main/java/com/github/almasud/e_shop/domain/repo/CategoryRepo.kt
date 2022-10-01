@@ -1,9 +1,10 @@
 package com.github.almasud.e_shop.domain.repo
 
-import com.github.almasud.e_shop.CategoryListByParentIdQuery
-import com.github.almasud.e_shop.data.api.NetworkResult
+import androidx.paging.PagingData
+import com.github.almasud.e_shop.domain.model.entity.Category
+import kotlinx.coroutines.flow.Flow
 
 interface CategoryRepo {
-    suspend fun getCategoriesByParentIdFromApi(uid: String)
-            : NetworkResult<CategoryListByParentIdQuery.Data>
+    suspend fun getCategoriesByParentId(parentId: String)
+            : Flow<PagingData<Category>>
 }

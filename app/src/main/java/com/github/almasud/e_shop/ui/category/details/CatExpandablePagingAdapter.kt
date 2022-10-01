@@ -6,19 +6,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.RecycledViewPool
 import com.github.almasud.e_shop.R
 import com.github.almasud.e_shop.databinding.ItemCategoryExpandableBinding
-import com.github.almasud.e_shop.domain.model.Category
+import com.github.almasud.e_shop.domain.model.entity.Category
 import com.github.almasud.e_shop.ui.category.details.sub_category.SubCategoryListAdapter
 import java.util.*
 
-class CategoryListExpandableAdapter :
-    ListAdapter<Category, CategoryListExpandableAdapter.CategoryExpandableViewHolder>(object :
+class CatExpandablePagingAdapter :
+    PagingDataAdapter<Category, CatExpandablePagingAdapter.CategoryExpandableViewHolder>(object :
         DiffUtil.ItemCallback<Category>() {
         override fun areItemsTheSame(oldItem: Category, newItem: Category): Boolean {
             return oldItem == newItem
@@ -52,7 +52,7 @@ class CategoryListExpandableAdapter :
     override fun onBindViewHolder(holder: CategoryExpandableViewHolder, position: Int) {
         val category = getItem(position)
         // Update the view
-        holder.updateUI(category, position)
+        category?.let { holder.updateUI(it, position) }
     }
 
     inner class CategoryExpandableViewHolder(
@@ -132,7 +132,7 @@ class CategoryListExpandableAdapter :
     }
 
     companion object {
-        private const val TAG = "CategoryListExpandableAdapter"
+        private const val TAG = "CatExpandablePagingAdapter"
     }
 
 }

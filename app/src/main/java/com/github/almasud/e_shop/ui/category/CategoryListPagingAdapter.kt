@@ -6,17 +6,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.github.almasud.e_shop.R
 import com.github.almasud.e_shop.databinding.ItemCategoryBinding
-import com.github.almasud.e_shop.domain.model.Category
+import com.github.almasud.e_shop.domain.model.entity.Category
 import com.github.almasud.e_shop.ui.util.ImageUtil
 import java.util.*
 
-class CategoryListAdapter :
-    ListAdapter<Category, CategoryListAdapter.CategoryViewHolder>(object :
+class CategoryListPagingAdapter :
+    PagingDataAdapter<Category, CategoryListPagingAdapter.CategoryViewHolder>(object :
         DiffUtil.ItemCallback<Category>() {
         override fun areItemsTheSame(oldItem: Category, newItem: Category): Boolean {
             return oldItem == newItem
@@ -43,7 +43,7 @@ class CategoryListAdapter :
     override fun onBindViewHolder(holder: CategoryViewHolder, position: Int) {
         val category = getItem(position)
 
-        holder.updateUI(category, position)
+        category?.let { holder.updateUI(it, position) }
     }
 
     inner class CategoryViewHolder(
@@ -62,6 +62,7 @@ class CategoryListAdapter :
             ImageUtil.setImageLinkWithTextView(
                 layoutBinding.root.context,
                 category.image?.url ?: "",
+//                "https://source.unsplash.com/user/c_v_r/1900x800",
                 category.enName,
                 layoutBinding.ivCatIcon,
                 layoutBinding.tvCatIcon,

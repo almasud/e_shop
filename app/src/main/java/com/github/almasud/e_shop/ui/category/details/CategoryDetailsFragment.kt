@@ -6,26 +6,27 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.paging.LoadState
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.github.almasud.e_shop.data.api.NetworkResult
 import com.github.almasud.e_shop.databinding.FragmentCategoryDetailsBinding
-import com.github.almasud.e_shop.domain.model.Category
-import com.github.almasud.e_shop.ui.category.details.sub_category.SubCategoryListAdapter
+import com.github.almasud.e_shop.domain.model.entity.Category
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class CategoryDetailsFragment : Fragment() {
 
     private var _binding: FragmentCategoryDetailsBinding? = null
-    private val categoryListAdapter = CategoryListExpandableAdapter()
+    private val catExpandablePagingAdapter = CatExpandablePagingAdapter()
     private var categories: MutableList<Category> = mutableListOf()
     private var subCategories: MutableList<Category> = mutableListOf()
     private val viewModel: CategoryDetailsFragmentVM by viewModels()
-    private lateinit var subCatAdapter: SubCategoryListAdapter
+//    private lateinit var subCatAdapter: SubCategoryListAdapter
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -40,7 +41,7 @@ class CategoryDetailsFragment : Fragment() {
         binding.rvCatExpandable.layoutManager = LinearLayoutManager(
             requireContext(), LinearLayoutManager.VERTICAL, false
         )
-        binding.rvCatExpandable.adapter = categoryListAdapter
+        binding.rvCatExpandable.adapter = catExpandablePagingAdapter
 
         return binding.root
     }
@@ -51,99 +52,71 @@ class CategoryDetailsFragment : Fragment() {
 
         // For expandable categories
         lifecycleScope.launch {
-            viewModel.expandableCategoriesByParentId.collect { networkResult ->
-                when (networkResult) {
-                    is NetworkResult.Loading -> {
-                        Log.i(
-                            TAG,
-                            "onViewCreated: expandableCategoriesByParentId data is loading..."
-                        )
-                    }
-                    is NetworkResult.Success -> {
-                        val fetchCategories = networkResult.data.getCategories?.result?.categories
-                        Log.i(
-                            TAG,
-                            "onViewCreated: expandableCategoriesByParentId: fetchCategories: $fetchCategories"
-                        )
-
-                        categories.clear()
-                        fetchCategories?.forEach { category ->
-                            categories.add(Category.toCategory(category))
-                        }
-                        // Finally submit the categories
-                        categoryListAdapter.submitList(categories)
-                        categoryListAdapter.notifyDataSetChanged()
-
-                        categoryListAdapter.setOnExpandableCatExpandListener { selectCategory, _, subCatAdapter ->
-                            Log.i(
-                                TAG,
-                                "setOnExpandableCatClicked: category: ${selectCategory.enName} and uid: ${selectCategory.uid}"
-                            )
-                            this@CategoryDetailsFragment.subCatAdapter = subCatAdapter
-
-                            // Load the sub categories
-                            viewModel.loadSubCategoriesByParentId(selectCategory.uid!!)
-                        }
-                    }
-                    is NetworkResult.Error -> {
-                        Log.e(
-                            TAG,
-                            "onViewCreated categoriesByParentId: error: ${networkResult.message}"
-                        )
-                    }
-                    is NetworkResult.Exception -> {
-                        Log.e(
-                            TAG,
-                            "onViewCreated: categoriesByParentId: error: ${networkResult.e.message}",
-                            networkResult.e
-                        )
-                    }
-                }
+            viewModel.expandableCategoriesByParentId.collectLatest { categoryPagingData ->
+                catExpandablePagingAdapter.submitData(categoryPagingData)
+                catExpandablePagingAdapter.notifyDataSetChanged()
             }
         }
 
         lifecycleScope.launch {
-            // For sub categories
-            viewModel.subCategoriesByParentId.collect { networkResult ->
-                when (networkResult) {
-                    is NetworkResult.Loading -> {
-                        Log.i(TAG, "onViewCreated: subCategoriesByParentId data is loading...")
-                    }
-                    is NetworkResult.Success -> {
-                        val fetchedSubCategories =
-                            networkResult.data.getCategories?.result?.categories
-                        Log.i(
-                            TAG,
-                            "onViewCreated: subCategoriesByParentId: fetchedSubCategories: $fetchedSubCategories"
-                        )
-
-                        subCategories.clear()
-                        fetchedSubCategories?.forEach { category ->
-                            subCategories.add(Category.toCategory(category))
-                        }
-                        // Finally submit the subCategories
-                        if (this@CategoryDetailsFragment::subCatAdapter.isInitialized) {
-                            subCatAdapter.submitList(subCategories)
-                            subCatAdapter.notifyDataSetChanged()
-                        }
-
-                    }
-                    is NetworkResult.Error -> {
-                        Log.e(
-                            TAG,
-                            "onViewCreated categoriesByParentId: error: ${networkResult.message}"
-                        )
-                    }
-                    is NetworkResult.Exception -> {
-                        Log.e(
-                            TAG,
-                            "onViewCreated: categoriesByParentId: error: ${networkResult.e.message}",
-                            networkResult.e
-                        )
-                    }
+            catExpandablePagingAdapter.loadStateFlow.collect { loadState ->
+                // Toast on any error, regardless of whether it came from RemoteMediator or PagingSource
+                val errorState = loadState.source.append as? LoadState.Error
+                    ?: loadState.source.prepend as? LoadState.Error
+                    ?: loadState.append as? LoadState.Error
+                    ?: loadState.prepend as? LoadState.Error
+                errorState?.let {
+                    Toast.makeText(
+                        requireContext(),
+                        "\uD83D\uDE28 Wooops ${it.error}",
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
             }
         }
+
+        catExpandablePagingAdapter.setOnExpandableCatExpandListener { selectCategory, _, subCatAdapter ->
+            Log.i(
+                TAG,
+                "setOnExpandableCatClicked: category: ${selectCategory.enName} and uid: ${selectCategory.uid}"
+            )
+
+            lifecycleScope.launch {
+                viewModel.subCategoriesByParentId.collectLatest { subCategoryPagingData ->
+                    subCatAdapter.submitData(subCategoryPagingData)
+                    subCatAdapter.notifyDataSetChanged()
+                }
+            }
+
+            lifecycleScope.launch {
+                subCatAdapter.loadStateFlow.collect { loadState ->
+                    // Toast on any error, regardless of whether it came from RemoteMediator or PagingSource
+                    val errorState = loadState.source.append as? LoadState.Error
+                        ?: loadState.source.prepend as? LoadState.Error
+                        ?: loadState.append as? LoadState.Error
+                        ?: loadState.prepend as? LoadState.Error
+                    errorState?.let {
+                        Toast.makeText(
+                            requireContext(),
+                            "\uD83D\uDE28 Wooops ${it.error}",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
+            }
+
+            // Load the sub categories
+            viewModel.loadSubCategoriesByParentId(selectCategory.uid)
+        }
+
+//        lifecycleScope.launch {
+//            viewModel.subCategoriesByParentId.collectLatest { subCategoryPagingData ->
+//                if (this@CategoryDetailsFragment::subCatAdapter.isInitialized) {
+//                    subCatAdapter.submitList(subCategories)
+//                    subCatAdapter.notifyDataSetChanged()
+//                }
+//            }
+//        }
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -154,7 +127,7 @@ class CategoryDetailsFragment : Fragment() {
         )
 
         // Load the expandable categories
-        viewModel.loadExpandableCategoriesByParentId(category.uid!!)
+        viewModel.loadExpandableCategoriesByParentId(category.uid)
     }
 
     override fun onDestroyView() {

@@ -1,12 +1,12 @@
 # e-Shop
 A simple Android application that displays a list of category items. Every category item has an expandable list of categories. The expandable list of categories also has another list of categories.
 
+## Screenshot
 <p align="center">
   <img width="250" height="450" src="https://raw.githubusercontent.com/almasud/e_shop/master/screenshots/screen_01.jpeg" alt="Category Screen"/>
 </p>
 
-### Used
-
+## Used
 <div style="display:flex;">
 
 - Kotlin (Programming language)
@@ -16,12 +16,11 @@ A simple Android application that displays a list of category items. Every categ
 - Room Database
 - Paging 3 (Load and display pages)
 - Hilt (Dependency Injection)
-- Glude (Image loading)
+- Glide (Image loading & caching)
 
 </div>
 
-### GraphQL query
-
+## GraphQL query
 ```
 {
     getCategories(
@@ -60,5 +59,5 @@ A simple Android application that displays a list of category items. Every categ
 ```
 
 
-##### Thank you all and happy codding... 
+##### Thanks & regards
 [Abdullah Almasud](https://almasud.github.io)
